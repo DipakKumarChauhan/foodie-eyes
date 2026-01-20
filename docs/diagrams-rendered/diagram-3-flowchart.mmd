@@ -1,0 +1,54 @@
+flowchart TD
+    Start([User Submits Query]) --> Extract[Extract Base Query<br/>Remove Filter Context]
+    Extract --> Groq1[Groq: Food Intent Validation]
+    
+    Groq1 --> Valid{Valid Food Query?}
+    Valid -->|No| Reject[Return 400 Error<br/>Non-Food Rejection]
+    Valid -->|Yes| Optimize[Groq: Optimize Query<br/>- Spell Correction<br/>- Normalize Plurals<br/>- Detect Cuisine]
+    
+    Optimize --> Reappend[Re-append Filters<br/>Dietary/Budget/Allergens]
+    Reappend --> Serper1[Serper: Initial Search<br/>Query + Location]
+    
+    Serper1 --> Results1{Results Found?}
+    Results1 -->|No| Fallback[Groq: Generate Fallback Query]
+    Fallback --> Serper2[Serper: Fallback Search]
+    Serper2 --> Results2{Results Found?}
+    Results2 -->|No| Empty[Return Empty Results]
+    Results2 -->|Yes| CuisineCheck
+    
+    Results1 -->|Yes| CuisineCheck{Cuisine Detected?}
+    CuisineCheck -->|Yes| CuisineSearch[Serper: Search Cuisine Restaurants<br/>e.g., 'South Indian restaurants']
+    CuisineSearch --> Merge[Merge Results<br/>Remove Duplicates]
+    Merge --> Enrich
+    CuisineCheck -->|No| Enrich[Enrich Place Details<br/>- Get Reviews<br/>- Get Snippets<br/>- Get Categories]
+    
+    Enrich --> Scoring[Smart Scoring Algorithm]
+    
+    Scoring --> Score1[For Each Place:<br/>Initialize Score = 0]
+    Score1 --> Score2[Cuisine Match?<br/>If Yes: +1000 points]
+    Score2 --> Score3[Place Type Match?<br/>If Yes: +1500 points<br/>If No: -2000 points]
+    Score3 --> Score4[Term Match Ratio<br/>Matching Terms / Total Terms<br/>Score += Ratio × 500]
+    Score4 --> Score5[Rating Contribution<br/>Score += Rating × 10]
+    
+    Score5 --> Sort[Sort Places by Score<br/>Descending Order]
+    Sort --> Top12[Select Top 12 Places]
+    
+    Top12 --> Groq2[Groq: Analyze Places<br/>Generate:<br/>- Match Reasons<br/>- Tips<br/>- Famous Dishes]
+    Groq2 --> Format[Format Response<br/>- Add Context<br/>- Add Metadata]
+    
+    Format --> Return[Return to Frontend]
+    Empty --> Return
+    Reject --> Return
+    
+    Return --> Display[Display Results<br/>Sorted by Relevance]
+    
+    style Start fill:#e1f5ff
+    style Return fill:#d4edda
+    style Reject fill:#f8d7da
+    style Empty fill:#fff3cd
+    style Scoring fill:#e7f3ff
+    style Groq1 fill:#fff9e6
+    style Groq2 fill:#fff9e6
+    style Serper1 fill:#fff9e6
+    style Serper2 fill:#fff9e6
+    style CuisineSearch fill:#fff9e6

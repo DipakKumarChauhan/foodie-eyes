@@ -1,0 +1,113 @@
+flowchart TD
+    Start([User Opens App]) --> CheckAuth{User Authenticated?}
+    CheckAuth -->|No| ShowLocationModal[Show Location Modal]
+    CheckAuth -->|Yes| LoadSavedLocation[Load Saved Location]
+    
+    ShowLocationModal --> GetLocation{Location Method}
+    GetLocation -->|Manual Input| EnterLocation[User Enters Location]
+    GetLocation -->|GPS| RequestGPS[Request GPS Permission]
+    RequestGPS -->|Granted| GetCoordinates[Get Coordinates]
+    GetCoordinates --> ReverseGeocode[Reverse Geocode to Address]
+    ReverseGeocode --> SaveLocation[Save Location]
+    EnterLocation --> SaveLocation
+    LoadSavedLocation --> LocationSet[Location Set]
+    SaveLocation --> LocationSet
+    
+    LocationSet --> ShowSearch[Show Search Interface]
+    ShowSearch --> UserInput{User Input Method}
+    
+    UserInput -->|Text Input| TextQuery[User Types Query]
+    UserInput -->|Voice Input| VoiceQuery[User Clicks Mic Button]
+    UserInput -->|Mood Card| MoodQuery[User Selects Mood Card]
+    
+    VoiceQuery --> StartSpeechRec[Start Speech Recognition]
+    StartSpeechRec -->|Permission?| SpeechError{Error?}
+    SpeechError -->|Yes| ShowError[Show Permission Error]
+    SpeechError -->|No| CaptureSpeech[Capture Speech]
+    CaptureSpeech --> ConvertToText[Convert Speech to Text]
+    ConvertToText --> TextQuery
+    
+    MoodQuery --> SetMoodPrompt[Set Mood Prompt as Query]
+    SetMoodPrompt --> TextQuery
+    
+    TextQuery --> ApplyFilters{Apply Filters?}
+    ApplyFilters -->|Yes| SetFilters[Set Dietary/Budget/Allergens]
+    ApplyFilters -->|No| BuildQuery[Build Contextual Query]
+    SetFilters --> BuildQuery
+    
+    BuildQuery --> ValidateQuery{Query Valid?}
+    ValidateQuery -->|Empty| ShowEmptyError[Show Empty Query Error]
+    ValidateQuery -->|No Location| ShowLocationError[Show Location Required Error]
+    ValidateQuery -->|Valid| SendToAPI[POST /api/agent]
+    
+    SendToAPI --> Step1[STEP 1: Groq Query Refinement]
+    Step1 --> ExtractBaseQuery[Extract Base Query<br/>Remove Filter Context]
+    ExtractBaseQuery --> GroqValidate[Groq: Validate Food Intent]
+    
+    GroqValidate --> IsFood{Is Food Related?}
+    IsFood -->|No| ReturnError[Return 400 Error<br/>Non-Food Rejection]
+    IsFood -->|Yes| OptimizeQuery[Optimize Query<br/>Spell Check<br/>Cuisine Detection]
+    
+    OptimizeQuery --> ReappendFilters[Re-append Filter Context]
+    ReappendFilters --> Step2[STEP 2: Serper Places Search]
+    
+    Step2 --> SearchPlaces[Search Google Maps Places<br/>via Serper API]
+    SearchPlaces --> HasResults{Results Found?}
+    
+    HasResults -->|No| FallbackQuery[Try Fallback Query]
+    FallbackQuery --> FallbackResults{Results?}
+    FallbackResults -->|No| NoResults[Return Empty Results]
+    FallbackResults -->|Yes| EnrichPlaces
+    
+    HasResults -->|Yes| CheckCuisine{Cuisine Detected?}
+    CheckCuisine -->|Yes| CuisineExpansion[Expand Search:<br/>Search Cuisine Restaurants]
+    CuisineExpansion --> MergeResults[Merge Cuisine Results]
+    MergeResults --> EnrichPlaces[Enrich Place Details]
+    CheckCuisine -->|No| EnrichPlaces
+    
+    EnrichPlaces --> GetDetails[Get Place Details<br/>Reviews, Snippets]
+    GetDetails --> Step3[STEP 3: Smart Scoring]
+    
+    Step3 --> ScorePlaces[Score Each Place:<br/>- Cuisine Match +1000<br/>- Place Type Match +1500<br/>- Term Match Ratio +500<br/>- Rating +10]
+    ScorePlaces --> SortByScore[Sort by Score<br/>Not Just Rating]
+    SortByScore --> TopResults[Select Top 12 Results]
+    
+    TopResults --> Step4[STEP 4: Groq Analysis]
+    Step4 --> AnalyzePlaces[Groq: Analyze Places<br/>Generate Tips & Match Reasons]
+    AnalyzePlaces --> FormatResponse[Format Response]
+    
+    FormatResponse --> ReturnResults[Return Results to Frontend]
+    ReturnError --> ShowErrorMsg[Show Error Message]
+    NoResults --> ShowNoResults[Show No Results Message]
+    
+    ReturnResults --> DisplayResults[Display Results Cards]
+    DisplayResults --> UserAction{User Action}
+    
+    UserAction -->|View Details| OpenDetailModal[Open Detail Modal]
+    UserAction -->|Bookmark| CheckAuth2{Authenticated?}
+    UserAction -->|Search Again| ShowSearch
+    
+    CheckAuth2 -->|No| ShowAuthModal[Show Auth Modal]
+    CheckAuth2 -->|Yes| SaveBookmark[Save to Firestore]
+    ShowAuthModal --> UserSignsIn[User Signs In]
+    UserSignsIn --> SaveBookmark
+    SaveBookmark --> UpdateUI[Update Bookmark UI]
+    
+    OpenDetailModal --> ShowDetails[Show Place Details:<br/>- Address & Map<br/>- Reviews<br/>- Contact Info<br/>- Famous Dishes]
+    ShowDetails --> DetailActions{Detail Actions}
+    DetailActions -->|Bookmark| CheckAuth2
+    DetailActions -->|Share| SharePlace[Share on Social Media]
+    DetailActions -->|Close| DisplayResults
+    
+    ShowErrorMsg --> ShowSearch
+    ShowNoResults --> ShowSearch
+    UpdateUI --> DisplayResults
+    
+    style Start fill:#e1f5ff
+    style ReturnResults fill:#d4edda
+    style ReturnError fill:#f8d7da
+    style NoResults fill:#fff3cd
+    style Step1 fill:#fff9e6
+    style Step2 fill:#fff9e6
+    style Step3 fill:#fff9e6
+    style Step4 fill:#fff9e6

@@ -1,0 +1,99 @@
+flowchart LR
+    subgraph "User Input Layer"
+        TextInput[Text Input]
+        VoiceInput[Voice Input]
+        MoodCards[Mood Cards]
+        Filters[Filters]
+    end
+    
+    subgraph "Frontend Processing"
+        SearchHero[SearchHero Component]
+        QueryBuilder[Query Builder<br/>Contextual Query]
+    end
+    
+    subgraph "API Layer"
+        AgentAPI[API Agent Route]
+        QueryExtractor[Base Query Extractor]
+    end
+    
+    subgraph "AI Processing"
+        GroqValidate[Groq: Validate Intent]
+        GroqOptimize[Groq: Optimize Query]
+        GroqCuisine[Groq: Detect Cuisine]
+        GroqAnalyze[Groq: Analyze Places]
+    end
+    
+    subgraph "External APIs"
+        SerperSearch[Serper: Search Places]
+        SerperDetails[Serper: Get Details]
+        MapsGeocode[Maps: Reverse Geocode]
+    end
+    
+    subgraph "Data Processing"
+        Scoring[Smart Scoring]
+        Ranking[Ranking Algorithm]
+        Filtering[Result Filtering]
+    end
+    
+    subgraph "Storage"
+        FirebaseAuth[Firebase: Auth]
+        FirestoreBookmarks[Firestore: Bookmarks]
+        FirestoreHistory[Firestore: History]
+        LocalStorage[LocalStorage: Location]
+    end
+    
+    subgraph "Output Layer"
+        Results[Results Display]
+        DetailModal[Detail Modal]
+        Bookmarks[Bookmarks View]
+        History[History View]
+    end
+    
+    TextInput --> SearchHero
+    VoiceInput --> SearchHero
+    MoodCards --> SearchHero
+    Filters --> SearchHero
+    
+    SearchHero --> QueryBuilder
+    QueryBuilder --> AgentAPI
+    
+    AgentAPI --> QueryExtractor
+    QueryExtractor --> GroqValidate
+    GroqValidate --> GroqOptimize
+    GroqOptimize --> GroqCuisine
+    
+    GroqCuisine --> SerperSearch
+    SerperSearch --> SerperDetails
+    SerperDetails --> Scoring
+    Scoring --> Ranking
+    Ranking --> Filtering
+    Filtering --> GroqAnalyze
+    GroqAnalyze --> Results
+    
+    Results --> DetailModal
+    DetailModal --> FirebaseAuth
+    FirebaseAuth --> FirestoreBookmarks
+    FirestoreBookmarks --> Bookmarks
+    
+    SearchHero --> FirestoreHistory
+    FirestoreHistory --> History
+    
+    SearchHero --> LocalStorage
+    MapsGeocode --> LocalStorage
+    
+    style TextInput fill:#e1f5ff
+    style VoiceInput fill:#e1f5ff
+    style MoodCards fill:#e1f5ff
+    style Filters fill:#e1f5ff
+    style Results fill:#d4edda
+    style DetailModal fill:#d4edda
+    style Bookmarks fill:#d4edda
+    style History fill:#d4edda
+    style GroqValidate fill:#fff9e6
+    style GroqOptimize fill:#fff9e6
+    style GroqCuisine fill:#fff9e6
+    style GroqAnalyze fill:#fff9e6
+    style SerperSearch fill:#fff9e6
+    style SerperDetails fill:#fff9e6
+    style Scoring fill:#e7f3ff
+    style Ranking fill:#e7f3ff

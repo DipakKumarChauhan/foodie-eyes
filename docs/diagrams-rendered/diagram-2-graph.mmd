@@ -1,0 +1,69 @@
+graph TB
+    User[👤 User<br/>Guest/Registered]
+    System[🍔 Foodie Eyes System]
+    Groq[🤖 Groq AI]
+    Serper[🗺️ Serper API]
+    Firebase[🔥 Firebase]
+    Maps[📍 Google Maps]
+    
+    %% User Use Cases
+    User -->|UC1: Set Location| System
+    User -->|UC2: Search Food Places| System
+    User -->|UC3: Use Voice Input| System
+    User -->|UC4: Apply Filters| System
+    User -->|UC5: View Place Details| System
+    User -->|UC6: Bookmark Places| System
+    User -->|UC7: View Bookmarks| System
+    User -->|UC8: View Search History| System
+    User -->|UC9: Share Places| System
+    User -->|UC10: Sign In/Out| System
+    User -->|UC11: Select Mood Cards| System
+    User -->|UC12: Use Location Autocomplete| System
+    
+    %% System Internal Processes
+    System -->|Validate Query| Groq
+    System -->|Optimize Query| Groq
+    System -->|Detect Cuisine| Groq
+    System -->|Analyze Places| Groq
+    System -->|Search Places| Serper
+    System -->|Get Place Details| Serper
+    System -->|Authenticate User| Firebase
+    System -->|Save Bookmarks| Firebase
+    System -->|Save History| Firebase
+    System -->|Get User Data| Firebase
+    System -->|Reverse Geocode| Maps
+    System -->|Location Autocomplete| Maps
+    
+    %% Use Case Details
+    UC1[UC1: Set Location<br/>- Manual Input<br/>- GPS Location<br/>- Autocomplete<br/>- Save Preference]
+    UC2[UC2: Search Food Places<br/>- Text Query<br/>- Voice Query<br/>- Mood Selection<br/>- Filter Application]
+    UC3[UC3: Use Voice Input<br/>- Start/Stop Recording<br/>- Speech to Text<br/>- Permission Handling]
+    UC4[UC4: Apply Filters<br/>- Dietary Preferences<br/>- Budget Range<br/>- Allergen Avoidance]
+    UC5[UC5: View Place Details<br/>- Full Information<br/>- Reviews & Ratings<br/>- Contact Details<br/>- Map Location]
+    UC6[UC6: Bookmark Places<br/>- Add/Remove<br/>- Requires Auth<br/>- Persist to Cloud]
+    UC7[UC7: View Bookmarks<br/>- List Saved Places<br/>- Quick Access<br/>- Remove Bookmarks]
+    UC8[UC8: View Search History<br/>- Past Searches<br/>- Quick Re-search]
+    UC9[UC9: Share Places<br/>- Social Media<br/>- Copy Link<br/>- WhatsApp/Telegram]
+    UC10[UC10: Sign In/Out<br/>- Google Sign-In<br/>- Email/Password<br/>- Session Management]
+    UC11[UC11: Select Mood Cards<br/>- Quick Search<br/>- Pre-defined Moods]
+    UC12[UC12: Use Location Autocomplete<br/>- Real-time Suggestions<br/>- Address Selection]
+    
+    System -.->|Implements| UC1
+    System -.->|Implements| UC2
+    System -.->|Implements| UC3
+    System -.->|Implements| UC4
+    System -.->|Implements| UC5
+    System -.->|Implements| UC6
+    System -.->|Implements| UC7
+    System -.->|Implements| UC8
+    System -.->|Implements| UC9
+    System -.->|Implements| UC10
+    System -.->|Implements| UC11
+    System -.->|Implements| UC12
+    
+    style User fill:#e1f5ff
+    style System fill:#d4edda
+    style Groq fill:#fff9e6
+    style Serper fill:#fff9e6
+    style Firebase fill:#fff9e6
+    style Maps fill:#fff9e6

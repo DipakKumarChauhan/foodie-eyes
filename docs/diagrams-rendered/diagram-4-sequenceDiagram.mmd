@@ -1,0 +1,94 @@
+sequenceDiagram
+    participant User
+    participant Home as Home Page
+    participant TopBar as TopBar Component
+    participant LocationDisplay as LocationDisplay
+    participant MoodCards as MoodCards
+    participant SearchHero as SearchHero Component
+    participant DetailModal as DetailModal
+    participant AuthModal as AuthModal
+    participant API as /api/agent
+    participant Groq as Groq AI
+    participant Serper as Serper API
+    participant Firebase as Firebase
+    
+    User->>Home: Opens Application
+    Home->>Firebase: Check Auth Status
+    Firebase-->>Home: Auth Status
+    Home->>Home: Load Saved Location
+    Home->>TopBar: Render with Location
+    Home->>LocationDisplay: Render Location
+    Home->>MoodCards: Render Mood Options
+    Home->>SearchHero: Render Search Interface
+    
+    User->>SearchHero: Enters Query
+    alt Voice Input
+        User->>SearchHero: Clicks Mic Button
+        SearchHero->>SearchHero: Start Speech Recognition
+        SearchHero->>SearchHero: Convert Speech to Text
+    end
+    
+    alt Apply Filters
+        User->>SearchHero: Opens Filter Panel
+        User->>SearchHero: Sets Dietary/Budget/Allergens
+    end
+    
+    User->>SearchHero: Submits Search
+    SearchHero->>API: POST /api/agent<br/>{query, location, filters}
+    
+    API->>Groq: Validate & Optimize Query
+    Groq-->>API: {is_food, searchQuery, cuisineCategory}
+    
+    alt Not Food
+        API-->>SearchHero: 400 Error
+        SearchHero->>User: Show Error Message
+    else Food Query
+        API->>Serper: Search Places
+        Serper-->>API: Places Array
+        
+        alt Cuisine Detected
+            API->>Serper: Search Cuisine Restaurants
+            Serper-->>API: Additional Places
+            API->>API: Merge & Deduplicate
+        end
+        
+        API->>Serper: Enrich Place Details
+        Serper-->>API: Detailed Place Info
+        
+        API->>API: Smart Scoring & Ranking
+        API->>Groq: Analyze Places
+        Groq-->>API: Tips & Match Reasons
+        
+        API-->>SearchHero: Results Array
+        SearchHero->>User: Display Results Cards
+    end
+    
+    User->>SearchHero: Clicks Place Card
+    SearchHero->>Home: onPlaceSelect(place)
+    Home->>Firebase: Add to History
+    Home->>DetailModal: Open with Place Data
+    DetailModal->>User: Show Full Details
+    
+    alt Bookmark Action
+        User->>DetailModal: Clicks Bookmark
+        DetailModal->>Home: onBookmark(place)
+        Home->>Home: Check Auth Status
+        
+        alt Not Authenticated
+            Home->>AuthModal: Show Auth Modal
+            User->>AuthModal: Signs In
+            AuthModal->>Firebase: Authenticate
+            Firebase-->>AuthModal: User Object
+            AuthModal->>Home: Close Modal
+        end
+        
+        Home->>Firebase: Save Bookmark
+        Firebase-->>Home: Success
+        Home->>DetailModal: Update Bookmark State
+    end
+    
+    alt Share Action
+        User->>DetailModal: Clicks Share
+        DetailModal->>DetailModal: Generate Share URL
+        DetailModal->>User: Show Share Options
+    end

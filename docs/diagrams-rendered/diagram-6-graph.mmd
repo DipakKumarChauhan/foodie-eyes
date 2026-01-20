@@ -1,0 +1,56 @@
+graph TB
+    subgraph "Client Layer"
+        Browser[Web Browser<br/>Next.js App]
+        Components[React Components]
+        Hooks[Custom Hooks]
+        Context[React Context]
+    end
+    
+    subgraph "API Layer"
+        NextAPI[Next.js API Routes]
+        AgentRoute[API Agent Route]
+    end
+    
+    subgraph "AI Services"
+        GroqService[Groq AI Service<br/>- Query Refinement<br/>- Cuisine Detection<br/>- Place Analysis]
+    end
+    
+    subgraph "External Services"
+        SerperAPI[Serper API<br/>Google Maps Places]
+        MapsAPI[Google Maps API<br/>Geocoding]
+        FirebaseService[Firebase<br/>- Authentication<br/>- Firestore]
+    end
+    
+    subgraph "Data Processing"
+        ScoringEngine[Scoring Engine<br/>- Cuisine Matching<br/>- Place Type Matching<br/>- Term Matching]
+        RankingEngine[Ranking Engine<br/>- Score-based Sorting]
+    end
+    
+    Browser --> Components
+    Components --> Hooks
+    Hooks --> Context
+    Components --> NextAPI
+    
+    NextAPI --> AgentRoute
+    AgentRoute --> GroqService
+    AgentRoute --> SerperAPI
+    AgentRoute --> ScoringEngine
+    ScoringEngine --> RankingEngine
+    RankingEngine --> AgentRoute
+    
+    Components --> FirebaseService
+    Components --> MapsAPI
+    
+    GroqService -.->|External API| GroqExternal[Groq Cloud]
+    SerperAPI -.->|External API| SerperExternal[Serper Cloud]
+    FirebaseService -.->|External API| FirebaseExternal[Firebase Cloud]
+    MapsAPI -.->|External API| MapsExternal[Google Cloud]
+    
+    style Browser fill:#e1f5ff
+    style Components fill:#d4edda
+    style AgentRoute fill:#fff9e6
+    style GroqService fill:#fff9e6
+    style SerperAPI fill:#fff9e6
+    style FirebaseService fill:#fff9e6
+    style ScoringEngine fill:#e7f3ff
+    style RankingEngine fill:#e7f3ff
