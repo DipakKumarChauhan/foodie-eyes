@@ -1,0 +1,183 @@
+graph TB
+    subgraph "🌐 Client Layer - Next.js Frontend"
+        direction TB
+        Browser[🌍 Web Browser<br/>Chrome, Firefox, Safari, Edge]
+        NextJS[⚛️ Next.js 16.1.1<br/>React 19.2.3<br/>App Router]
+        
+        subgraph "React Components"
+            TopBar[TopBar Component<br/>Navigation & Location]
+            SearchHero[SearchHero Component<br/>Search Interface & Filters]
+            MoodCards[MoodCards Component<br/>Quick Mood Selection]
+            DetailModal[DetailModal Component<br/>Place Details & Actions]
+            AuthModal[AuthModal Component<br/>User Authentication]
+            LocationModal[LocationModal Component<br/>Location Selection]
+        end
+        
+        subgraph "Custom Hooks"
+            useSpeechRec[useSpeechRecognition<br/>Voice Input Processing]
+            useBookmarks[useBookmarks<br/>Bookmark Management]
+            useHistory[useHistory<br/>Search History]
+        end
+        
+        subgraph "Context & State"
+            AuthContext[AuthContext<br/>Global Auth State]
+            ReactState[React State Management<br/>Component State]
+        end
+        
+        Browser --> NextJS
+        NextJS --> TopBar
+        NextJS --> SearchHero
+        NextJS --> MoodCards
+        NextJS --> DetailModal
+        NextJS --> AuthModal
+        NextJS --> LocationModal
+        
+        SearchHero --> useSpeechRec
+        SearchHero --> useBookmarks
+        SearchHero --> useHistory
+        DetailModal --> AuthContext
+        AuthModal --> AuthContext
+    end
+    
+    subgraph "🔌 API Layer - Next.js API Routes"
+        direction TB
+        NextAPIRoutes[Next.js API Routes<br/>Server-Side Endpoints]
+        AgentRoute[API Agent Route<br/>Main Search Endpoint<br/>POST Method]
+        
+        NextAPIRoutes --> AgentRoute
+    end
+    
+    subgraph "🤖 AI/ML Services Layer"
+        direction TB
+        GroqSDK[Groq SDK<br/>LLM Processing]
+        
+        subgraph "Groq Functions"
+            RefineQuery[refineQuery<br/>- Food Intent Validation<br/>- Query Optimization<br/>- Spelling Correction<br/>- Cuisine Detection]
+            AnalyzePlaces[analyzePlaces<br/>- Place Analysis<br/>- Match Reasons<br/>- Tips Generation<br/>- Dish Recommendations]
+            FallbackQuery[getFallbackQuery<br/>- Alternative Query Generation<br/>- Fallback Search Terms]
+        end
+        
+        GroqSDK --> RefineQuery
+        GroqSDK --> AnalyzePlaces
+        GroqSDK --> FallbackQuery
+    end
+    
+    subgraph "🗺️ External APIs Layer"
+        direction TB
+        
+        subgraph "Serper API"
+            SerperPlaces[Serper Places API<br/>Google Maps Places Search<br/>- Place Discovery<br/>- Location-based Search<br/>- Place Details]
+            SerperSearch[Serper Search API<br/>- Review Snippets<br/>- Public Reviews<br/>- Place Information]
+        end
+        
+        subgraph "Google Maps Services"
+            MapsGeocoding[Google Maps Geocoding<br/>Reverse Geocoding<br/>Coordinates → Address]
+            MapsPlaces[Google Maps Places<br/>Place Data & Reviews]
+        end
+        
+        subgraph "OpenStreetMap"
+            Nominatim[Nominatim API<br/>OpenStreetMap<br/>- Location Autocomplete<br/>- Reverse Geocoding<br/>- Address Lookup]
+        end
+    end
+    
+    subgraph "🔥 Firebase Services Layer"
+        direction TB
+        
+        subgraph "Firebase Authentication"
+            FirebaseAuth[Firebase Auth<br/>- Google Sign-In<br/>- Email/Password<br/>- Session Management]
+        end
+        
+        subgraph "Cloud Firestore"
+            FirestoreDB[Cloud Firestore<br/>NoSQL Database]
+            BookmarksCollection[bookmarks Collection<br/>User Bookmarks Storage]
+            HistoryCollection[history Collection<br/>Search History Storage]
+            UsersCollection[users Collection<br/>User Profile Data]
+        end
+        
+        FirebaseAuth --> FirestoreDB
+        FirestoreDB --> BookmarksCollection
+        FirestoreDB --> HistoryCollection
+        FirestoreDB --> UsersCollection
+    end
+    
+    subgraph "💾 Local Storage Layer"
+        direction TB
+        LocalStorage[Browser LocalStorage<br/>Client-Side Storage]
+        LocationStorage[Location Preferences<br/>User Location Cache]
+        SessionData[Session Data<br/>Temporary State]
+        
+        LocalStorage --> LocationStorage
+        LocalStorage --> SessionData
+    end
+    
+    subgraph "⚙️ Data Processing Layer"
+        direction TB
+        
+        subgraph "Scoring Engine"
+            ScoringAlgo[Smart Scoring Algorithm<br/>- Cuisine Match Scoring<br/>- Place Type Matching<br/>- Term Match Ratio<br/>- Rating Weighting]
+        end
+        
+        subgraph "Ranking Engine"
+            RankingAlgo[Ranking Algorithm<br/>- Score-based Sorting<br/>- Relevance Prioritization<br/>- Top N Selection]
+        end
+        
+        subgraph "Filtering Engine"
+            FilterAlgo[Filtering Logic<br/>- Location Filtering<br/>- Cuisine Expansion<br/>- Duplicate Removal]
+        end
+        
+        ScoringAlgo --> RankingAlgo
+        RankingAlgo --> FilterAlgo
+    end
+    
+    subgraph "🌍 Infrastructure & Deployment"
+        direction TB
+        Vercel[Vercel Platform<br/>Hosting & Deployment]
+        CDN[CDN<br/>Content Delivery]
+        EdgeFunctions[Edge Functions<br/>Serverless Functions]
+        
+        Vercel --> CDN
+        Vercel --> EdgeFunctions
+    end
+    
+    %% Client to API connections
+    SearchHero -->|HTTP POST| AgentRoute
+    AuthModal -->|HTTP| FirebaseAuth
+    DetailModal -->|HTTP| FirestoreDB
+    
+    %% API to AI connections
+    AgentRoute -->|API Call| RefineQuery
+    AgentRoute -->|API Call| AnalyzePlaces
+    AgentRoute -->|API Call| FallbackQuery
+    
+    %% API to External Services
+    AgentRoute -->|API Call| SerperPlaces
+    AgentRoute -->|API Call| SerperSearch
+    LocationModal -->|API Call| Nominatim
+    TopBar -->|API Call| MapsGeocoding
+    
+    %% API to Data Processing
+    AgentRoute --> ScoringAlgo
+    ScoringAlgo --> RankingAlgo
+    RankingAlgo --> FilterAlgo
+    FilterAlgo --> AgentRoute
+    
+    %% Client to Storage
+    useBookmarks -->|Read/Write| FirestoreDB
+    useHistory -->|Read/Write| FirestoreDB
+    SearchHero -->|Read/Write| LocalStorage
+    
+    %% Infrastructure connections
+    NextJS -->|Deployed on| Vercel
+    AgentRoute -->|Runs on| EdgeFunctions
+    
+    %% Styling
+    style Browser fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
+    style NextJS fill:#d4edda,stroke:#28a745,stroke-width:2px
+    style AgentRoute fill:#fff9e6,stroke:#ffc107,stroke-width:3px
+    style GroqSDK fill:#fff9e6,stroke:#ffc107,stroke-width:2px
+    style SerperPlaces fill:#fff9e6,stroke:#ffc107,stroke-width:2px
+    style FirebaseAuth fill:#fff9e6,stroke:#ffc107,stroke-width:2px
+    style FirestoreDB fill:#fff9e6,stroke:#ffc107,stroke-width:2px
+    style ScoringAlgo fill:#e7f3ff,stroke:#0066cc,stroke-width:2px
+    style RankingAlgo fill:#e7f3ff,stroke:#0066cc,stroke-width:2px
+    style Vercel fill:#f8d7da,stroke:#dc3545,stroke-width:2px

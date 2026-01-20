@@ -8,7 +8,7 @@ graph TB
     
     subgraph "API Layer"
         NextAPI[Next.js API Routes]
-        AgentRoute[API Agent Route]
+        AgentRoute[/api/agent]
     end
     
     subgraph "AI Services"
@@ -41,10 +41,10 @@ graph TB
     Components --> FirebaseService
     Components --> MapsAPI
     
-    GroqService -.->|External API| GroqExternal[Groq Cloud]
-    SerperAPI -.->|External API| SerperExternal[Serper Cloud]
-    FirebaseService -.->|External API| FirebaseExternal[Firebase Cloud]
-    MapsAPI -.->|External API| MapsExternal[Google Cloud]
+    GroqService -.->|API Calls| GroqService
+    SerperAPI -.->|API Calls| SerperAPI
+    FirebaseService -.->|API Calls| FirebaseService
+    MapsAPI -.->|API Calls| MapsAPI
     
     style Browser fill:#e1f5ff
     style Components fill:#d4edda

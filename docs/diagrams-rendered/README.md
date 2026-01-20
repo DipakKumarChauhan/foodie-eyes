@@ -40,6 +40,12 @@ This directory contains rendered versions of all Mermaid diagrams from `DIAGRAMS
 - **SVG**: `diagram-6-graph.svg`
 - **Description**: Overall system architecture and technology stack
 
+### Diagram 7: Detailed System Architecture Diagram
+- **MMD**: `diagram-7-architecture.mmd`
+- **PNG**: `diagram-7-architecture.png` (Ultra High-Res: 4000×3000px)
+- **SVG**: `diagram-7-architecture.svg`
+- **Description**: Complete detailed architecture with all layers, components, services, hooks, context, and their interactions. Shows frontend components, API routes, AI services, external APIs, Firebase services, data processing engines, and infrastructure.
+
 ## Regenerating Diagrams
 
 To regenerate these diagrams:
