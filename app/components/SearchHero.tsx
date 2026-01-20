@@ -21,6 +21,7 @@ type Place = {
   match_reason?: string;
   note?: string;
   tip?: string;
+  link?: string;
 };
 
 type Props = {
